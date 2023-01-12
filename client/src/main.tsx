@@ -1,16 +1,16 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
+import IdContextProvider from './context/Id'
 import './index.css'
-import SocketProvider from './socket-context/socket'
+import SessionProvider from './context/Session'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
     <BrowserRouter>
-      <SocketProvider>
-        <App />
-      </SocketProvider>
+      <SessionProvider>
+        <IdContextProvider>
+          <App />
+        </IdContextProvider>
+      </SessionProvider>
     </BrowserRouter>
-  </React.StrictMode>,
 )

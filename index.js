@@ -28,6 +28,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const socket_io_1 = require("socket.io");
+const peer_1 = require("peer");
 const http = __importStar(require("http"));
 require("dotenv/config");
 const app = (0, express_1.default)();
@@ -39,6 +40,7 @@ const io = new socket_io_1.Server(server, {
         credentials: true
     }
 });
+const peerServer = (0, peer_1.PeerServer)({ port: 3000, path: '/peerjs' });
 app.use(express_1.default.json());
 app.get('/', (req, res) => {
     res.send('<h1>Hi mom</h1>');
@@ -54,6 +56,10 @@ io.on('connect', (socket) => {
     console.log(`User connected with socketId: ${socket.id}`);
     socket.on('disconnect', () => {
         console.log(`User disconnected with socketId: ${socket.id}`);
+    });
+    socket.on('join-room', (roomId, userId) => {
+        socket.join(roomId);
+        socket.broadcast.to(roomId).emit('user-connected', userId);
     });
 });
 start(port);

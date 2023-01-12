@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express'
 import { Server } from 'socket.io'
+import { PeerServer } from 'peer'
 import * as http from 'http'
 
 import 'dotenv/config'
@@ -13,6 +14,7 @@ const io = new Server(server, {
     credentials: true
   }
 })
+const peerServer = PeerServer({ port: 3000, path: '/peerjs' });
 
 app.use(express.json())
 
@@ -33,6 +35,10 @@ io.on('connect', (socket) => {
   console.log(`User connected with socketId: ${socket.id}`);
   socket.on('disconnect', () => {
     console.log(`User disconnected with socketId: ${socket.id}`);
+  })
+  socket.on('join-room', (roomId, userId) => {
+    socket.join(roomId)
+    socket.broadcast.to(roomId).emit('user-connected', userId)
   })
 })
 
